@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_definitions(-DKENLM_MAX_ORDER=6)
 add_definitions(-DHAVE_ZLIB)
+add_definitions(-D_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION)
+
 add_compile_options(-fexceptions -frtti)
 
 include_directories(
@@ -14,13 +16,13 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../util/double-conversion
 )
 
-# واکشی فایل‌های سورس محاسباتی KenLM
+# واکشی فایل‌های سورس KenLM
 file(GLOB_RECURSE KENLM_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/../util/*.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/../lm/*.cc
 )
 
-# حذف ابزارهای آموزش مدل، پردازش استریم و تست‌ها
+# فیلتر کردن فایل‌های تست، برنامه‌های خط فرمان و ابزارهای ساخت مدل
 list(FILTER KENLM_SRCS EXCLUDE REGEX ".*main\\.cc$")
 list(FILTER KENLM_SRCS EXCLUDE REGEX ".*test\\.cc$")
 list(FILTER KENLM_SRCS EXCLUDE REGEX ".*benchmark\\.cc$")
@@ -28,6 +30,7 @@ list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/filter/.*")
 list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/interpolate/.*")
 list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/builder/.*")
 list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/stream/.*")
+list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/common/.*")
 
 add_library(
     kenlm_native
