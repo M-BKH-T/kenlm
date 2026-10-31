@@ -6,10 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_definitions(-DKENLM_MAX_ORDER=6)
 add_definitions(-DHAVE_ZLIB)
-add_compile_options(-Wno-poison-system-directories -fexceptions -frtti)
+add_compile_options(-fexceptions -frtti)
 
 include_directories(
-    SYSTEM /usr/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../util/double-conversion
 )
@@ -20,12 +20,14 @@ file(GLOB_RECURSE KENLM_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/../lm/*.cc
 )
 
-# حذف ابزارهای خط فرمان و تست‌ها
+# حذف ابزارهای آموزش مدل، پردازش استریم و تست‌ها
 list(FILTER KENLM_SRCS EXCLUDE REGEX ".*main\\.cc$")
 list(FILTER KENLM_SRCS EXCLUDE REGEX ".*test\\.cc$")
 list(FILTER KENLM_SRCS EXCLUDE REGEX ".*benchmark\\.cc$")
 list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/filter/.*")
 list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/interpolate/.*")
+list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/builder/.*")
+list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/stream/.*")
 
 add_library(
     kenlm_native
