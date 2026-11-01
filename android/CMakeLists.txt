@@ -15,55 +15,26 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../util/double-conversion
 )
 
-# دقیقاً فایل‌های پایه مورد نیاز لود و ارزیابی باینری بدون پوشه‌های wrappers, builder, stream
-set(UTIL_SRCS
-    ../util/bit_packing.cc
-    ../util/ersatz_progress.cc
-    ../util/exception.cc
-    ../util/file.cc
-    ../util/file_piece.cc
-    ../util/float_to_string.cc
-    ../util/integer_to_string.cc
-    ../util/mmap.cc
-    ../util/murmur_hash.cc
-    ../util/parallel_read.cc
-    ../util/pool.cc
-    ../util/read_compressed.cc
-    ../util/scoped.cc
-    ../util/string_piece.cc
-    ../util/usage.cc
-    ../util/double-conversion/bignum.cc
-    ../util/double-conversion/bignum-dtoa.cc
-    ../util/double-conversion/cached-powers.cc
-    ../util/double-conversion/diy-fp.cc
-    ../util/double-conversion/double-conversion.cc
-    ../util/double-conversion/fast-dtoa.cc
-    ../util/double-conversion/fixed-dtoa.cc
-    ../util/double-conversion/strtod.cc
-)
+# ۱. واکشی خودکار فایل‌های double-conversion موجود
+file(GLOB DOUBLE_CONV_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/../util/double-conversion/*.cc")
 
-set(LM_SRCS
-    ../lm/bhiksha.cc
-    ../lm/binary_format.cc
-    ../lm/config.cc
-    ../lm/lm_exception.cc
-    ../lm/model.cc
-    ../lm/quantize.cc
-    ../lm/read_arpa.cc
-    ../lm/search_hashed.cc
-    ../lm/search_trie.cc
-    ../lm/sizes.cc
-    ../lm/trie.cc
-    ../lm/trie_sort.cc
-    ../lm/value_build.cc
-    ../lm/virtual_interface.cc
-    ../lm/vocab.cc
-)
+# ۲. واکشی فایل‌های util (فقط لایه اصلی بدون ورود به ساب‌فولدرها)
+file(GLOB UTIL_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/../util/*.cc")
+list(FILTER UTIL_SRCS EXCLUDE REGEX ".*main\\.cc$")
+list(FILTER UTIL_SRCS EXCLUDE REGEX ".*test\\.cc$")
+list(FILTER UTIL_SRCS EXCLUDE REGEX ".*benchmark\\.cc$")
+
+# ۳. واکشی فایل‌های lm (فقط لایه اصلی بدون ورود به builder و wrappers)
+file(GLOB LM_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/../lm/*.cc")
+list(FILTER LM_SRCS EXCLUDE REGEX ".*main\\.cc$")
+list(FILTER LM_SRCS EXCLUDE REGEX ".*test\\.cc$")
+list(FILTER LM_SRCS EXCLUDE REGEX ".*benchmark\\.cc$")
 
 add_library(
     kenlm_native
     SHARED
     kenlm_jni.cpp
+    ${DOUBLE_CONV_SRCS}
     ${UTIL_SRCS}
     ${LM_SRCS}
 )
