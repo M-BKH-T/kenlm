@@ -7,8 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DKENLM_MAX_ORDER=6)
 add_definitions(-DHAVE_ZLIB)
 add_definitions(-D_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION)
-
-add_compile_options(-fexceptions -frtti)
+add_compile_options(-fexceptions -frtti -O3)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -16,27 +15,57 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../util/double-conversion
 )
 
-# واکشی فایل‌های سورس KenLM
-file(GLOB_RECURSE KENLM_SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/../util/*.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/../lm/*.cc
+# دقیقاً فایل‌های پایه مورد نیاز لود و ارزیابی باینری بدون پوشه‌های wrappers, builder, stream
+set(UTIL_SRCS
+    ../util/bit_packing.cc
+    ../util/ersatz_progress.cc
+    ../util/exception.cc
+    ../util/file.cc
+    ../util/file_piece.cc
+    ../util/float_to_string.cc
+    ../util/integer_to_string.cc
+    ../util/mmap.cc
+    ../util/murmur_hash.cc
+    ../util/parallel_read.cc
+    ../util/pool.cc
+    ../util/read_compressed.cc
+    ../util/scoped.cc
+    ../util/string_piece.cc
+    ../util/usage.cc
+    ../util/double-conversion/bignum.cc
+    ../util/double-conversion/bignum-dtoa.cc
+    ../util/double-conversion/cached-powers.cc
+    ../util/double-conversion/diy-fp.cc
+    ../util/double-conversion/double-conversion.cc
+    ../util/double-conversion/fast-dtoa.cc
+    ../util/double-conversion/fixed-dtoa.cc
+    ../util/double-conversion/strtod.cc
 )
 
-# فیلتر کردن فایل‌های تست، برنامه‌های خط فرمان و ابزارهای ساخت مدل
-list(FILTER KENLM_SRCS EXCLUDE REGEX ".*main\\.cc$")
-list(FILTER KENLM_SRCS EXCLUDE REGEX ".*test\\.cc$")
-list(FILTER KENLM_SRCS EXCLUDE REGEX ".*benchmark\\.cc$")
-list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/filter/.*")
-list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/interpolate/.*")
-list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/builder/.*")
-list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/stream/.*")
-list(FILTER KENLM_SRCS EXCLUDE REGEX ".*/common/.*")
+set(LM_SRCS
+    ../lm/bhiksha.cc
+    ../lm/binary_format.cc
+    ../lm/config.cc
+    ../lm/lm_exception.cc
+    ../lm/model.cc
+    ../lm/quantize.cc
+    ../lm/read_arpa.cc
+    ../lm/search_hashed.cc
+    ../lm/search_trie.cc
+    ../lm/sizes.cc
+    ../lm/trie.cc
+    ../lm/trie_sort.cc
+    ../lm/value_build.cc
+    ../lm/virtual_interface.cc
+    ../lm/vocab.cc
+)
 
 add_library(
     kenlm_native
     SHARED
     kenlm_jni.cpp
-    ${KENLM_SRCS}
+    ${UTIL_SRCS}
+    ${LM_SRCS}
 )
 
 find_library(log-lib log)
